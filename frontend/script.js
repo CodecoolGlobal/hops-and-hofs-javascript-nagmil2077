@@ -57,10 +57,10 @@ const resetFilterButton = (section, root) => {
 };
 
 const bestLightAleButton = (section, root) => {
-  const bestAleList = beers.reduce((acc, val) => {
-    return (val.type.includes('Ale') && val.abv <= 6 && val.score > 900) ? acc.concat(val) : acc;
-  }, []);
-  bestAleList.map((beer) => section.insertAdjacentHTML('afterbegin', winnerComponent(beer)));
+  const bestAle = beers.reduce((acc, val) => {
+    return (val.type.includes('Ale') && val.abv <= 6 && val.score > 900) ? { ...val} : acc;
+  });
+  section.insertAdjacentHTML('afterbegin', winnerComponent(bestAle));
   document.getElementById('bestLightAle').remove();
 };
 
@@ -82,14 +82,16 @@ const loadEvent = () => {
   const clickEvent = (event) => {
     /* console.dir(event.target);
     console.dir(event.target.id); */
-    return event.target.id === 'loadBeers' ? loadBeerButton(sectionElement, rootElement)
+    const result = event.target.id === 'loadBeers' ? loadBeerButton(sectionElement, rootElement)
       : event.target.id === 'sortByScore' ?
         (sortByScoreButton(clickCount, sectionElement), clickCount++)
         : event.target.id === 'filterStrongIPAs' ? strongIpaButton(sectionElement, rootElement)
-          : event.target.id === 'resetFilter' ? resetFilterButton(sectionElement, rootElement)
+          : event.target.id === 'resetFilter' ?
+            (resetFilterButton(sectionElement, rootElement), clickCount = 0)
             : event.target.id === 'bestLightAle' ? bestLightAleButton(sectionElement, rootElement)
               : event.target.id === 'closeWinner' ? closeButton(rootElement)
                 : event;
+    return result;
   };
   window.addEventListener('click', clickEvent);
 };
