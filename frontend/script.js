@@ -82,23 +82,16 @@ const loadEvent = () => {
   const clickEvent = (event) => {
     /* console.dir(event.target);
     console.dir(event.target.id); */
-    if (event.target.id === 'loadBeers') {
-      loadBeerButton(sectionElement, rootElement);
-    } else if (event.target.id === 'sortByScore') {
-      sortByScoreButton(clickCount, sectionElement);
-      clickCount++;
-    } else if (event.target.id === 'filterStrongIPAs') {
-      strongIpaButton(sectionElement, rootElement);
-    } else if (event.target.id === 'resetFilter') {
-      resetFilterButton(sectionElement, rootElement);
-    } else if (event.target.id === 'bestLightAle') {
-      bestLightAleButton(sectionElement, rootElement);
-    } else if (event.target.id === 'closeWinner') {
-      closeButton(rootElement);
-    }
+    return event.target.id === 'loadBeers' ? loadBeerButton(sectionElement, rootElement)
+      : event.target.id === 'sortByScore' ?
+        (sortByScoreButton(clickCount, sectionElement), clickCount++)
+        : event.target.id === 'filterStrongIPAs' ? strongIpaButton(sectionElement, rootElement)
+          : event.target.id === 'resetFilter' ? resetFilterButton(sectionElement, rootElement)
+            : event.target.id === 'bestLightAle' ? bestLightAleButton(sectionElement, rootElement)
+              : event.target.id === 'closeWinner' ? closeButton(rootElement)
+                : event;
   };
   window.addEventListener('click', clickEvent);
 };
-
 // you can run your code in different ways but this is the safest. This way you can make sure that all the content (including css, fonts) is loaded.
 window.addEventListener('load', loadEvent);
