@@ -20,8 +20,53 @@ const winnerComponent = (beer) => `
 	</div>
 `;
 
-const sortButton = (rootLocation) => {
-  rootLocation.insertAdjacentHTML('afterbegin', buttonComponent('sortByScore', 'Sort by score'));
+const loadBeerButton = (section, root) => {
+  document.getElementById('loadBeers').remove();
+  beers.map((beer) => section.insertAdjacentHTML('beforeend', beerComponent(beer)));
+  root.insertAdjacentHTML('afterbegin', buttonComponent('sortByScore', 'Sort by score'));
+  root.insertAdjacentHTML('afterbegin', buttonComponent('bestLightAle', 'Best Light Ale'));
+  root.insertAdjacentHTML('afterbegin', buttonComponent('filterStrongIPAs', 'Strong IPAs'));
+};
+
+const sortByScoreButton = (clickCount, section) => {
+  [...document.querySelectorAll('.beer')].map((beer) => beer.remove());
+  const sortedBeerList = [...beers].sort((a, b) => a.score - b.score);
+  if (clickCount % 2 === 0) {
+    sortedBeerList.map((beer) =>
+      section.insertAdjacentHTML('beforeend', beerComponent(beer)));
+  } else {
+    sortedBeerList.reverse().map((beer) =>
+      section.insertAdjacentHTML('beforeend', beerComponent(beer)));
+  }
+};
+
+const strongIpaButton = (section, root) => {
+  [...document.querySelectorAll('.beer')].map((beer) => beer.remove());
+  const filteredBeerList = beers.filter((beer) => beer.abv >= 6);
+  filteredBeerList.map((beer) =>
+    section.insertAdjacentHTML('beforeend', beerComponent(beer)));
+  document.getElementById('filterStrongIPAs').remove();
+  root.insertAdjacentHTML('afterbegin', buttonComponent('resetFilter', 'Reset filter'));
+};
+
+const resetFilterButton = (section, root) => {
+  [...document.querySelectorAll('.beer')].map((beer) => beer.remove());
+  beers.map((beer) => section.insertAdjacentHTML('beforeend', beerComponent(beer)));
+  document.getElementById('resetFilter').remove();
+  root.insertAdjacentHTML('afterbegin', buttonComponent('filterStrongIPAs', 'Strong IPAs'));
+};
+
+const bestLightAleButton = (section, root) => {
+  const bestAleList = beers.reduce((acc, val) => {
+    return (val.type.includes('Ale') && val.abv <= 6 && val.score > 900) ? acc.concat(val) : acc;
+  }, []);
+  bestAleList.map((beer) => section.insertAdjacentHTML('afterbegin', winnerComponent(beer)));
+  document.getElementById('bestLightAle').remove();
+};
+
+const closeButton = (root) => {
+  document.getElementById('winner').remove();
+  root.insertAdjacentHTML('afterbegin', buttonComponent('bestLightAle', 'Best Light Ale'));
 };
 
 const loadEvent = () => {
@@ -35,24 +80,21 @@ const loadEvent = () => {
   const sectionElement = document.getElementById('beerSect');
 
   const clickEvent = (event) => {
-    console.dir(event.target);
-    console.dir(event.target.id);
+    /* console.dir(event.target);
+    console.dir(event.target.id); */
     if (event.target.id === 'loadBeers') {
-      document.getElementById('loadBeers').remove();
-      beers.map((beer) => sectionElement.insertAdjacentHTML('beforeend', beerComponent(beer)));
-      sortButton(rootElement);
+      loadBeerButton(sectionElement, rootElement);
     } else if (event.target.id === 'sortByScore') {
-      [...document.querySelectorAll('.beer')].map((beer) => beer.remove());
-      const sortedBeerList = [...beers].sort((a, b) => a.score - b.score);
-      if (clickCount % 2 === 0) {
-        sortedBeerList.map((beer) =>
-          sectionElement.insertAdjacentHTML('beforeend', beerComponent(beer)));
-        clickCount++;
-      } else {
-        sortedBeerList.reverse().map((beer) =>
-          sectionElement.insertAdjacentHTML('beforeend', beerComponent(beer)));
-        clickCount++;
-      }
+      sortByScoreButton(clickCount, sectionElement);
+      clickCount++;
+    } else if (event.target.id === 'filterStrongIPAs') {
+      strongIpaButton(sectionElement, rootElement);
+    } else if (event.target.id === 'resetFilter') {
+      resetFilterButton(sectionElement, rootElement);
+    } else if (event.target.id === 'bestLightAle') {
+      bestLightAleButton(sectionElement, rootElement);
+    } else if (event.target.id === 'closeWinner') {
+      closeButton(rootElement);
     }
   };
   window.addEventListener('click', clickEvent);
