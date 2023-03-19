@@ -58,7 +58,7 @@ const resetFilterButton = (section, root) => {
 
 const bestLightAleButton = (section, root) => {
   const bestAle = beers.reduce((acc, val) => {
-    return (val.type.includes('Ale') && val.abv <= 6 && val.score > 900) ? { ...val} : acc;
+    return (val.type.includes('Ale') && val.abv <= 6 && val.score > acc.score) ? val : acc;
   });
   section.insertAdjacentHTML('afterbegin', winnerComponent(bestAle));
   document.getElementById('bestLightAle').remove();
